@@ -252,7 +252,7 @@ var numtimeout = 0;
 function QuestiontoAsk() {
 	console.log("A1 Q");
 	time = 30;
-	cntr = setInterval(runtimer, 500);
+	cntr = setInterval(runtimer, 1000);
 	$(".timer").html("<h2> Countdown: " + time + "<h2>");
 	$(".question").html(questions[currentQuestion].question);
 	$(".Ch1").html(questions[currentQuestion].option1);
