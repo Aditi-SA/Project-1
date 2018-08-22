@@ -264,7 +264,7 @@ function QuestiontoAsk() {
 function imageToShow(){
 		console.log("imageToShow");
 
-		var marvelQuery = "https://superheroapi.com/api.php/" + superHeroApikey + "/" + questions[currentQuestion].characterId + "/image";
+		var marvelQuery = "http://superheroapi.com/api.php/" + superHeroApikey + "/" + questions[currentQuestion].characterId + "/image";
 	
 		// Creating an AJAX call for the specific movie button being clicked
 		$.ajax({
