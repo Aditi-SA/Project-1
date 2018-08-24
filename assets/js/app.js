@@ -5,6 +5,11 @@ var currentGameTime = 0
 var END_INTERVAL = 0
 var START_INTERVAL = 10;
 
+$(".send-link").hide();
+$("#State-display").hide();
+$(".table").hide();
+$(".social-share").hide();
+$(".game-over-text").hide();
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyDLIgK7r7rGIlTqGvgCzYFJHGRDqUTudSQ",
@@ -32,27 +37,44 @@ document.getElementById('join').addEventListener('click', function () {
     database.ref('/players').once('value', function (snapshot) {
         if (snapshot.hasChild('1')) {
             var name2 = document.getElementById('name').value
-            database.ref('/players').child('2').set({
-                name: name2,
-                losses: 0,
-                wins: 0,
-                ready: false,
-            })
-            playerSlot = 2
-            document.getElementById('name-join-2').style.display = "none";
-            localStorage.setItem("player2", name2);
+            if (name2 != "") {
+                if (name2.length <= 8) {
+                    database.ref('/players').child('2').set({
+                        name: name2,
+                        losses: 0,
+                        wins: 0,
+                        ready: false,
+                    })
+                    playerSlot = 2
+                    document.getElementById('name-join-2').style.display = "none";
+                    localStorage.setItem("player2", name2);
+                    $("#errorMsg1").html("");
+                } else {
+                    $("#errorMsg1").html("<p>ERROR: Name must be 8 characters or less</p>");
+                }
+            } else {
+                $("#errorMsg1").html("<p>ERROR: Name cannot be blank</p>");
+            }
         } else {
             var name = document.getElementById('name').value
-            database.ref('/players').child('1').set({
-                name: name,
-                losses: 0,
-                wins: 0,
-                ready: false,
-            })
-            playerSlot = 1
-            document.getElementById('name-join-1').style.display = "none";
-            localStorage.setItem("player1", name);
-            location.reload();
+            if (name != "") {
+                if (name.length <= 8) {
+                    database.ref('/players').child('1').set({
+                        name: name,
+                        losses: 0,
+                        wins: 0,
+                        ready: false,
+                    })
+                    playerSlot = 1
+                    document.getElementById('name-join-1').style.display = "none";
+                    localStorage.setItem("player1", name);
+                    location.reload();
+                } else {
+                    $("#errorMsg1").html("<p>ERROR: Name must be 8 characters or less</p>");
+                }
+            } else {
+                $("#errorMsg1").html("<p>ERROR: Name cannot be blank</p>");
+            }
         }
     })
 })
@@ -63,27 +85,44 @@ document.getElementById('join2').addEventListener('click', function () {
     database.ref('/players').once('value', function (snapshot) {
         if (snapshot.hasChild('1')) {
             var name2 = document.getElementById('name2').value
-            database.ref('/players').child('2').set({
-                name: name2,
-                losses: 0,
-                wins: 0,
-                ready: false,
-            })
-            playerSlot = 2
-            document.getElementById('name-join-2').style.display = "none";
-            localStorage.setItem("player2", name2);
+            if (name2 != "") {
+                if (name2.length <= 8) {
+                    database.ref('/players').child('2').set({
+                        name: name2,
+                        losses: 0,
+                        wins: 0,
+                        ready: false,
+                    })
+                    playerSlot = 2
+                    document.getElementById('name-join-2').style.display = "none";
+                    localStorage.setItem("player2", name2);
+                    $("#errorMsg2").html("");
+                } else {
+                    $("#errorMsg2").html("<p>ERROR: Name must be 8 characters or less</p>");
+                }
+            } else {
+                $("#errorMsg2").html("<p>ERROR: Username cannot be blank</p>");
+            }
         } else {
             var name = document.getElementById('name').value
-            database.ref('/players').child('1').set({
-                name: name,
-                losses: 0,
-                wins: 0,
-                ready: false,
-            })
-            playerSlot = 1
-            document.getElementById('name-join-1').style.display = "none";
-            localStorage.setItem("player1", name);
-
+            if (name != "") {
+                if (name.length <= 8) {
+                    database.ref('/players').child('1').set({
+                        name: name,
+                        losses: 0,
+                        wins: 0,
+                        ready: false,
+                    })
+                    playerSlot = 1
+                    document.getElementById('name-join-1').style.display = "none";
+                    localStorage.setItem("player1", name);
+                    $("#errorMsg2").html("");
+                } else {
+                    $("#errorMsg2").html("<p>ERROR: Name must be 8 characters or less</p>");
+                }
+            } else {
+                $("#errorMsg2").html("<p>ERROR: Username cannot be blank</p>");
+            }
         }
     })
 })
@@ -115,7 +154,7 @@ database.ref('/players').on('value', function (snapshot) {
         document.getElementById('name-join-1').style.display = "none"
         database.ref('/players').child('1').on('value', function (snap) {
             document.getElementById('wins-losses-1').style.display = "block"
-            document.getElementById('player-1-name').innerHTML = snap.val().name
+            document.getElementById('player-1-name').innerHTML = snap.val().name.substr(0, 15);
             document.getElementById('player-1-wins').innerHTML = snap.val().wins
             document.getElementById('player-1-losses').innerHTML = snap.val().losses
         })
@@ -128,16 +167,23 @@ database.ref('/players').on('value', function (snapshot) {
         document.getElementById('name-join-2').style.display = "none"
         database.ref('/players').child('2').on('value', function (snap) {
             document.getElementById('wins-losses-2').style.display = "block"
-            document.getElementById('player-2-name').innerHTML = snap.val().name
+            document.getElementById('player-2-name').innerHTML = snap.val().name.substr(0, 15);
             document.getElementById('player-2-wins').innerHTML = snap.val().wins
             document.getElementById('player-2-losses').innerHTML = snap.val().losses
         })
     }
 
+    // if only player 1 is in the game
+    if (snapshot.hasChild('1')) {
+    $(".send-link").show();
+    }
+
     // If both players are in game run all of this
     if (snapshot.hasChild('1') && snapshot.hasChild('2')) {
         console.log('both players are present');
+        $(".send-link").hide();
         loadNextQuestion(currentQuestion);
+        marvelAPI(currentQuestion);
 
         // Questions written to database
         database.ref('/questions').set({
@@ -153,100 +199,100 @@ database.ref('/players').on('value', function (snapshot) {
             },
 
             q2: {
-                question: "Which planet is Superman originally from?",
-                option1: "Venus",
-                option2: "Beta",
-                option3: "Krypton",
-                option4: "Achermon",
-                answer: "Krypton",
+                question: "What is Captain America's shield made of?",
+                option1: "Titanium",
+                option2: "Aluminium Alloy",
+                option3: "Adamantium",
+                option4: "Vibranium",
+                answer: "Vibranium",
                 characterId: "1009220",
                 whosRight: 0
             },
 
             q3: {
-                question: "Identify the superhero?",
-                option1: "Hawkeye",
-                option2: "Iron Man",
-                option3: "Captain America",
-                option4: "Falcon",
-                answer: "Captain America",
+                question: "Identify the supervillain",
+                option1: "Doctor Doom",
+                option2: "Red Skull",
+                option3: "Thanos",
+                option4: "Ultron",
+                answer: "Thanos",
                 characterId: "1009652",
                 whosRight: 0
             },
 
             q4: {
-                question: "What superhero team is The Flash affiliated with?",
+                question: "What superhero team is Iron Man affiliated with?",
                 option1: "The Avengers",
                 option2: "Guardians of the Galaxy",
                 option3: "Fantastic Four",
                 option4: "The Justice League",
-                answer: "The Justice League",
+                answer: "The Avengers",
                 characterId: "1009368",
                 whosRight: 0
             },
 
             q5: {
-                question: "What is Wonder Woman's lasso called?",
-                option1: "Truth revealer",
-                option2: "Lasso of verda",
-                option3: "Truth Giver",
-                option4: "Lasso of Truth",
-                answer: "Lasso of Truth",
+                question: "What is Quicksilver's super power?",
+                option1: "X-Ray vision",
+                option2: "Great Speed",
+                option3: "Super Strength",
+                option4: "Laser eyes",
+                answer: "Great Speed",
                 characterId: "1009524",
                 whosRight: 0
             },
 
             q6: {
-                question: "Which of the following is NOT associated with Batman?",
-                option1: "Wayne Enterprise",
-                option2: "Batmobile",
-                option3: "Ra's al ghul",
-                option4: "Daily Planet",
-                answer: "Daily Planet",
+                question: "What is The Falcon's real name?",
+                option1: "Sam Wilson",
+                option2: "Bob Burkes",
+                option3: "James Rhodes",
+                option4: "Tony Stark",
+                answer: "Sam Wilson",
                 characterId: "1009297",
                 whosRight: 0
             },
 
             q7: {
-                question: "Who is the name of the person who united The Avengers together?",
-                option1: "Nick Fury",
-                option2: "Thanos",
-                option3: "Iron Man",
-                option4: "Maria Hill",
-                answer: "Nick Fury",
+                question: "Which Infinity Stone does Vision posses?",
+                option1: "Power Stone",
+                option2: "Mind Stone",
+                option3: "Soul Stone",
+                option4: "Time Stone",
+                answer: "Mind Stone",
                 characterId: "1009697",
                 whosRight: 0
             },
 
             q8: {
-                question: "Name the actress who played Black Widow in Marvel's Avengers series?",
-                option1: "Emma Watson",
-                option2: "Gwyneth Paltrow",
-                option3: "Scarlett Johansson",
-                option4: "Elizabeth Olsen",
-                answer: "Scarlett Johansson",
+                question: "What country does Black Panther come from?",
+                option1: "Namibia",
+                option2: "Wakanda",
+                option3: "South Africa",
+                option4: "Nigeria",
+                answer: "Wakanda",
                 characterId: "1009187",
                 whosRight: 0
             },
 
             q9: {
-                question: "What is Loki's alternate name?",
-                option1: "God of Mischief",
-                option2: "God of Strength",
-                option3: "God of War",
-                option4: "God of Ruling Arbitration",
-                answer: "God of Mischief",
+                question: "What phrase is Groot most likely to say?",
+                option1: "Always eat your vegetables!",
+                option2: "I am Groot!",
+                option3: "Use the force!",
+                option4: "Live long and prosper!",
+                answer: "I am Groot!",
                 characterId: "1010743",
                 whosRight: 0
             },
 
             q10: {
-                question: "Which one of these villains is NOT associated with Spider-Man?",
-                option1: "Sandman",
-                option2: "Vulture",
-                option3: "Dr. Octopus",
-                option4: "Scarecrow",
-                answer: "Scarecrow",
+                question: "How many dimensions are there in Doctor Strange?",
+                option1: "Two",
+                option2: "Fifteen",
+                option3: "Nine",
+                option4: "Eight",
+                answer: "Nine",
                 characterId: "1009282",
                 whosRight: 0
             }
@@ -262,10 +308,16 @@ function setTimer() {
 }
 
 function updatetimer() {
+
+
     //STOP THE GAME IF TOTAL GAME TIME is Up
     if (TOTAL_GAME_TIME === currentGameTime) {
+        database.ref('/show-question').set({
+            show: false
+        });
         console.log("Game Over")
         clearInterval(timer)
+        endgame();
         return
     }
 
@@ -273,22 +325,29 @@ function updatetimer() {
     currentGameTime++
     console.log("Current Game Time", currentGameTime)
     $(".timer").html("<h2>" + time + "<h2>");
+
+    //check the 10 second interval for each question
     if (time === END_INTERVAL) {
         ///////////////check out/////////////////////
         //Note:line 368-371: no change observed when added 
         ////////////////////////////////////
-        currentQuestion++;
+        //currentQuestion++;
+        //wronganswer();
         var ref = firebase.database().ref("/questions/");
         ref.once("value")
             .then(function (snapshot) {
                 var numberOfQuestions = snapshot.numChildren();
                 //check if its the last question
-                if (currentQuestion === numberOfQuestions) {
-                    //setTimeout(endgame, 4000);
+                console.log("currentQuestion " + currentQuestion)
+                console.log("numberOfQuestions " + numberOfQuestions)
+                if (currentQuestion > numberOfQuestions) {
+                    //setTimeout(endgame, 4000);                    
                     endgame();
                 } else {
+                    currentQuestion++;
                     // setTimeout(loadNextQuestion(currentQuestion), 5000);
                     loadNextQuestion(currentQuestion);
+                    marvelAPI(currentQuestion);
                 }
             });
 
@@ -296,13 +355,21 @@ function updatetimer() {
         //time = seconds for each question
         time--;
     }
+    // var ref = firebase.database().ref("/questions/");
+    // ref.once("value")
+    //     .then(function (snapshot) {
+    //             var numberOfQuestions = snapshot.numChildren();
+    //             //check if its the last question
+    //             console.log("currentQuestion " + currentQuestion)
+    //             console.log("numberOfQuestions " + numberOfQuestions)
+    //             if (currentQuestion > numberOfQuestions) {
+    //                 endgame();
+    //             }
+    // });
 }
 
 var currentQuestion = 1
 var currentQuest = 'q' + currentQuestion
-
-// initial load next question function
-//loadNextQuestion(1)
 
 function loadNextQuestion(nextQuestNum) {
     clearInterval(timer);
@@ -325,13 +392,13 @@ function loadNextQuestion(nextQuestNum) {
         if (showQuestion === true) {
             document.getElementById('questionDisplay').style.display = "block";
             //cntr = setInterval(runtimer, 1000);    
-            console.log("inside load question time=: " + time)       
+            console.log("inside load question time=: " + time)
             //$(".timer").html("<h2>" + time + "<h2>");
             $(".question").html(snapshot.val().question);
             $(".Ch1").html(snapshot.val().option1);
             $(".Ch2").html(snapshot.val().option2);
             $(".Ch3").html(snapshot.val().option3);
-            $(".Ch4").html(snapshot.val().option4);           
+            $(".Ch4").html(snapshot.val().option4);
         }
     })
     // updatedb()
@@ -345,73 +412,257 @@ function testCancelafter5() {
 } */
 
 //function handleoptionlick() {
-    //checks wrong/right
-    // Clicking on a multiple choice answer.
-    $(".choice").on("click", function () {
-        
-        database.ref('/show-question').set({
-            show: false
-        });
-
-        var picked = $(this).text();
-
-        database.ref('/questions/' + currentQuest).on("value", function (snapshot) {
-            currentQuestion++;
-            if (picked === snapshot.val().answer) {
-                rightanswer();
-            } else {
-                wronganswer();
-                // stop();
-            }
-        })
+//checks wrong/right
+// Clicking on a multiple choice answer.
+$(".choice").on("click", function () {
+    $(".image-of-character").show();
+    nextQuestNum = currentQuestion;
+    var nextQuest = 'q' + nextQuestNum;
+    database.ref('/show-question').set({
+        show: false
     });
+
+    var picked = $(this).text();
+
+    database.ref('/questions/' + nextQuest).on("value", function (snapshot) {
+        currentQuestion++;
+        if (picked === snapshot.val().answer) {
+            rightanswer();
+        } else {
+            wronganswer();
+        }
+
+        var ref = firebase.database().ref("/questions/");
+        ref.once("value")
+            .then(function (snapshot) {
+                var numberOfQuestions = snapshot.numChildren();
+                //check if its the last question
+                console.log("currentQuestion " + currentQuestion)
+                console.log("numberOfQuestions " + numberOfQuestions)
+                if (currentQuestion > numberOfQuestions) {
+                    //setTimeout(endgame, 4000);
+
+                    endgame();
+                }
+            });
+
+    })
+});
 // }
 
 function wronganswer() {
-    stoptimer(); 
-    
-    if (localStorage.getItem("player1") !== null) {
-		var ref = firebase.database().ref('/players').child('1').child('losses');
-		ref.transaction(function (currentClicks) {
-			// If node/clicks has never been set, currentRank will be `null`.
-			var newValue = (currentClicks || 0) + 1;
+    stoptimer();
 
-			return newValue;
+    if (localStorage.getItem("player1") !== null) {
+        var ref = firebase.database().ref('/players').child('1').child('losses');
+        ref.transaction(function (currentClicks) {
+            // If node/clicks has never been set, currentRank will be `null`.
+            var newValue = (currentClicks || 0) + 1;
+
+            return newValue;
         });
     } else if (localStorage.getItem("player2") !== null) {
-		var ref = firebase.database().ref('/players').child('2').child('losses');
-		ref.transaction(function (currentClicks) {
-			// If node/clicks has never been set, currentRank will be `null`.
-			var newValue = (currentClicks || 0) + 1;
+        var ref = firebase.database().ref('/players').child('2').child('losses');
+        ref.transaction(function (currentClicks) {
+            // If node/clicks has never been set, currentRank will be `null`.
+            var newValue = (currentClicks || 0) + 1;
 
-			return newValue;
-		});        
-	}
+            return newValue;
+        });
+    }
     loadNextQuestion(currentQuestion);
+    marvelAPI(currentQuestion);
 }
 
 function rightanswer() {
     stoptimer();
     if (localStorage.getItem("player1") !== null) {
-		var ref = firebase.database().ref('/players').child('1').child('wins');
-		ref.transaction(function (currentClicks) {
-			// If node/clicks has never been set, currentRank will be `null`.
-			var newValue = (currentClicks || 0) + 1;
+        var ref = firebase.database().ref('/players').child('1').child('wins');
+        ref.transaction(function (currentClicks) {
+            // If node/clicks has never been set, currentRank will be `null`.
+            var newValue = (currentClicks || 0) + 1;
 
-			return newValue;
+            return newValue;
         });
     } else if (localStorage.getItem("player2") !== null) {
-		var ref = firebase.database().ref('/players').child('2').child('wins');
-		ref.transaction(function (currentClicks) {
-			// If node/clicks has never been set, currentRank will be `null`.
-			var newValue = (currentClicks || 0) + 1;
+        var ref = firebase.database().ref('/players').child('2').child('wins');
+        ref.transaction(function (currentClicks) {
+            // If node/clicks has never been set, currentRank will be `null`.
+            var newValue = (currentClicks || 0) + 1;
 
-			return newValue;
-		});        
-	}
+            return newValue;
+        });
+    }
     loadNextQuestion(currentQuestion);
+    marvelAPI(currentQuestion);
 }
 
-function stoptimer(){
+
+
+function marvelAPI(nextQuestNum) {
+    // Marvel Image API Keys
+    //adam
+    //var PUBLIC_KEY = "a239260af7bd8c5e374e7a05d9affd2b";
+    //var PRIV_KEY = "195700d7088c134a202e57c9fb325dff831799ba";
+
+    //aditi
+    // var PUBLIC_KEY = "32fbc187d5d7d68799f46a214b2c214f";
+    // var PRIV_KEY = "a0897ff20a9350a2bf2de726ae2f01350623efed";
+
+    // additional api keys
+    var PUBLIC_KEY = "9442b9c2482fb7f73739fd7f06c93bc7";
+    var PRIV_KEY = "b4f8b331ea6ebc9a239948c204f4894475b9675e";
+
+    var ts = new Date().getTime();
+    var MD5 = function (d) {
+        result = M(V(Y(X(d), 8 * d.length)));
+        return result.toLowerCase()
+    };
+
+    function M(d) {
+        for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++) _ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _);
+        return f
+    }
+
+    function X(d) {
+        for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++) _[m] = 0;
+        for (m = 0; m < 8 * d.length; m += 8) _[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32;
+        return _
+    }
+
+    function V(d) {
+        for (var _ = "", m = 0; m < 32 * d.length; m += 8) _ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255);
+        return _
+    }
+
+    function Y(d, _) {
+        d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _;
+        for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) {
+            var h = m,
+                t = f,
+                g = r,
+                e = i;
+            f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e)
+        }
+        return Array(m, f, r, i)
+    }
+
+    function md5_cmn(d, _, m, f, r, i) {
+        return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m)
+    }
+
+    function md5_ff(d, _, m, f, r, i, n) {
+        return md5_cmn(_ & m | ~_ & f, d, _, r, i, n)
+    }
+
+    function md5_gg(d, _, m, f, r, i, n) {
+        return md5_cmn(_ & f | m & ~f, d, _, r, i, n)
+    }
+
+    function md5_hh(d, _, m, f, r, i, n) {
+        return md5_cmn(_ ^ m ^ f, d, _, r, i, n)
+    }
+
+    function md5_ii(d, _, m, f, r, i, n) {
+        return md5_cmn(m ^ (_ | ~f), d, _, r, i, n)
+    }
+
+    function safe_add(d, _) {
+        var m = (65535 & d) + (65535 & _);
+        return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m
+    }
+
+    function bit_rol(d, _) {
+        return d << _ | d >>> 32 - _
+    }
+    var result = MD5(ts + PRIV_KEY + PUBLIC_KEY).toString();
+    var nextQuest = 'q' + nextQuestNum;
+    database.ref('/questions/' + nextQuest).on("value", function (snapshot) {
+        var marvelQuery = 'https://gateway.marvel.com/v1/public/characters/' + snapshot.val().characterId;
+
+        console.log(marvelQuery);
+        $.getJSON(marvelQuery, {
+                ts: ts,
+                apikey: PUBLIC_KEY,
+                hash: result,
+            })
+            .then(function (response) {
+                var characterDiv = $("<div>");
+                characterDiv.addClass("card");
+                characterDiv.attr("style", "float:left; margin: 0px; width:200px;");
+                // sort of a long dump you will need to sort through
+                console.log(response);
+                var path = (response.data.results[0].thumbnail.path);
+                var extension = (response.data.results[0].thumbnail.extension);
+
+                var image = $("<img>");
+                image.attr("src", path + '.' + extension).attr("height", "100%");
+                // image.attr("src", response.url).attr("height", "175");
+                image.addClass("card-img-top gif");
+                characterDiv.append(image);
+
+                $(".image-of-character").html(characterDiv);
+
+            })
+            .fail(function (err) {
+                // the error codes are listed on the dev site
+                console.log(err);
+            });
+    })
+}
+
+function stoptimer() {
     clearInterval(timer);
+}
+
+function endgame() {
+
+    // $(".question").html("GAME OVER!!!! MUHAHAHAHA");
+    $(".question").hide();
+    $("#questionDisplay").hide();
+    $(".image-of-character").hide();
+    clearInterval(timer);
+    $(".timer").empty();
+    // $(".choice").empty();
+    // $("button").hide();
+    $(".game-over-text").show();
+    $(".table").show();
+    $("#State-display").show();
+    // Update table with stats 
+    database.ref('/players').child('1').once('value', function (snapshot) {
+        $("#name1table").html(snapshot.val().name.substr(0, 8));
+        $("#wins1table").html(snapshot.val().wins);
+        $("#loss1table").html(snapshot.val().losses);
+    })
+
+    database.ref('/players').child('2').once('value', function (snapshot) {
+        $("#name2table").html(snapshot.val().name.substr(0, 8));
+        $("#wins2table").html(snapshot.val().wins);
+        $("#loss2table").html(snapshot.val().losses);
+    })
+
+    //Code for sharing stats on social media
+    $(".social-share").show();
+    var twitterShare = document.querySelector('[data-js="twitter-share"]');
+
+    twitterShare.onclick = function (e) {
+        e.preventDefault();
+        var twitterWindow = window.open('https://twitter.com/share?url=' + document.URL, 'twitter-popup', 'height=350,width=600');
+        if (twitterWindow.focus) {
+            twitterWindow.focus();
+        }
+        return false;
+    }
+
+    var facebookShare = document.querySelector('[data-js="facebook-share"]');
+
+    facebookShare.onclick = function (e) {
+        e.preventDefault();
+        var facebookWindow = window.open('https://www.facebook.com/sharer/sharer.php?u=' + document.URL, 'facebook-popup', 'height=350,width=600');
+        if (facebookWindow.focus) {
+            facebookWindow.focus();
+        }
+        return false;
+    }
+
 }
