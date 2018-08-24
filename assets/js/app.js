@@ -1,6 +1,6 @@
 var timer;
 var time = 10
-var TOTAL_GAME_TIME = 12
+var TOTAL_GAME_TIME = 30
 var currentGameTime = 0
 var END_INTERVAL = 0
 var START_INTERVAL = 10;
