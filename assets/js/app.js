@@ -1,6 +1,6 @@
 var timer;
-var time = 10
-var TOTAL_GAME_TIME = 30
+var time = 8
+var TOTAL_GAME_TIME = 80
 var currentGameTime = 0
 var END_INTERVAL = 0
 var START_INTERVAL = 10;
@@ -73,7 +73,8 @@ document.getElementById('join').addEventListener('click', function () {
                     playerSlot = 1
                     document.getElementById('name-join-1').style.display = "none";
                     localStorage.setItem("player1", name);
-                    location.reload();
+                    // location.reload();
+                    $("#errorMsg1").html("");
                 } else {
                     $("#errorMsg1").html("<p>ERROR: Name must be 8 characters or less</p>");
                 }
@@ -83,6 +84,12 @@ document.getElementById('join').addEventListener('click', function () {
         }
     })
 })
+
+function checkLocalStorage() {
+    if (localStorage.getItem("player1") === null && localStorage.getItem("player2") === null) {
+        document.getElementById('name-join-2').style.display = "block"
+    }
+}
 
 // Text Field for Player 2
 document.getElementById('join2').addEventListener('click', function () {
@@ -153,9 +160,7 @@ document.getElementById('reset').addEventListener('click', function () {
 // If player 1 is in the game, show their username and stats
 database.ref('/players').on('value', function (snapshot) {
     if (snapshot.hasChild('1')) {
-        if (localStorage.getItem("player1") === null) {
-            document.getElementById('name-join-2').style.display = "block"
-        }
+        setTimeout(checkLocalStorage, 500);
         document.getElementById('name-join-1').style.display = "none"
         database.ref('/players').child('1').on('value', function (snap) {
             document.getElementById('wins-losses-1').style.display = "block"
@@ -180,7 +185,7 @@ database.ref('/players').on('value', function (snapshot) {
 
     // if only player 1 is in the game
     if (snapshot.hasChild('1')) {
-    $(".send-link").show();
+        $(".send-link").show();
     }
 
     // If both players are in game run all of this
@@ -674,7 +679,7 @@ function endgame() {
 
 
 // selects questions array, hides the rules and start button
-$("#startgame").on("click", function() {    
+$("#startgame").on("click", function () {
     $(".rules").hide();
     $(".Fun-Fact").hide();
     $(".All-Game").show();
@@ -683,8 +688,47 @@ $("#startgame").on("click", function() {
 
 //////////////////////////////////////////////////////////////////////////////////////
 //omdb function
-$("#Marvel-Data").on("click", function() {       
-    $(".rules").hide();
+$("#Marvel-Data").on("click", function (event) {
+    event.preventDefault();
     $(".All-Game").hide();
-    $(".Fun-Fact").show();    
+    $(".Fun-Fact").show();
+    omdbAPI();
 });
+
+function omdbAPI() {
+    var heroes = ["Iron Man", "The Incredible Hulk", "Iron Man 2", "Thor", "Captain America: The First Avenger", "Marvel's The Avengers", "Iron Man 3", "Thor: The Dark World", "Captain America: The Winter Soldier", "Guardians of the Galaxy", "Avengers: Age of Ultron", "Ant-Man", "Captain America: Civil War", "Doctor Strange", "Guardians of the Galaxy Vol. 2", "Spider-Man: Homecoming", "Thor: Ragnarok", "Black Panther", "Avengers: Infinity War", "Ant-Man and The Wasp"];
+    var randomHero = heroes[Math.floor(Math.random() * heroes.length)];
+    var nameNoSpace = randomHero.replace(/ /g, "%20");
+    var queryURL = "https://www.omdbapi.com/?t=" + nameNoSpace + "&plot=short&apikey=trilogy";
+
+    // Creating an AJAX call for the specific movie button being clicked
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    }).then(function (response) {
+        console.log(response);
+        if (response.Error) {
+            console.log("Error: " + response.Error);
+            return
+        }
+
+        // Storing the movie title
+        var title = response.Title;
+
+        // Retrieving the URL for the image
+        var imgURL = response.Poster;
+
+        // Creating an element to hold the image
+        var image = $("<img>").attr("src", imgURL).css("width", "40%");
+
+        // Displaying the title
+        $(".movie-title").html(title);
+
+        // Displaying the image
+        $(".movie-image").html(image);
+
+    }).catch(function (error) {
+        console.log(error);
+    });
+
+}

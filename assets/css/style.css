@@ -244,6 +244,24 @@ i.fa.fa-twitter{
   top: 30px;
 }
 
+.btn-warning{
+  color: white !important;
+  background-color: #bd0315 !important;
+  border-color: #bd0315 !important;
+  margin-top:20px;
+}
+
+.movie-image{
+  text-align:center;
+}
+
+#movie-title-h3{
+float: none !important;
+margin:0 !important;
+margin-bottom:10px !important;
+text-align:center;
+}
+
 @media only screen and (max-width: 980px){
 
   .image-of-character{
