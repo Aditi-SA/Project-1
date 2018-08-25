@@ -520,8 +520,12 @@ function marvelAPI(nextQuestNum) {
     // var PRIV_KEY = "a0897ff20a9350a2bf2de726ae2f01350623efed";
 
     // additional api keys
-    var PUBLIC_KEY = "9442b9c2482fb7f73739fd7f06c93bc7";
-    var PRIV_KEY = "b4f8b331ea6ebc9a239948c204f4894475b9675e";
+    // var PUBLIC_KEY = "9442b9c2482fb7f73739fd7f06c93bc7";
+    // var PRIV_KEY = "b4f8b331ea6ebc9a239948c204f4894475b9675e";
+
+     // additional api keys
+    var PUBLIC_KEY = "60a1d83d00fd7336b25345021e6d38b0";
+    var PRIV_KEY = "2b274e1c303bf3c503f36ba39bac3b2fee543b25";
 
     var ts = new Date().getTime();
     var MD5 = function (d) {
