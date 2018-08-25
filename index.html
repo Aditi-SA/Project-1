@@ -47,7 +47,29 @@
         </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid ">        
+        <div style ="height:500px;" class="card mb-2 rules panel"> 
+            <h3 class="card-header">Game rules:</h3>
+            <div class="card-body">
+                <ul>
+                <li>You will face a total of 10 questions.</li>
+                <li>Select the correct answer out of the 4 choices provided for each question.</li>
+                <li>You will have a maximum of 10 seconds to answer each question.</li>
+                <li>The Game lasts for an overall of 50 seconds.</li>
+                </ul>
+                <hr> 
+                <a href="#" id="startgame" class="btn btn-success btn-lg">START GAME</a> <br>   
+                <br>
+                <a href="#" id="Marvel-Data" class="btn btn-warning btn-lg">Random Marvel Fun Fact</a> <br>   
+            </div>
+        </div> 
+    </div>
+
+    <div class="container-fluid Fun-Fact"> 
+    </div>
+
+
+    <div class="container-fluid All-Game">
         <div class="row">
             <div class="col-md-4">
                 <div class="panel">
@@ -72,7 +94,7 @@
                 <div class="panel">
                     <p class="text top-left">Time remaining...</p>
                     <br>
-                    <button class="uk-button uk-button-primary" id="startgame" type="button" name="button">Start Game</button>
+                    <!-- <button class="uk-button uk-button-primary" id="startgame" type="button" name="button">Start Game</button> -->
                     <div class="timer text-center"></div>
                     <p class="text bottom-right">...hurry before it's too late!</p>
                 </div>
@@ -99,7 +121,7 @@
         </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid All-Game">
         <div class="row">
             <div class="col-md-8">
                 <div class="panel" style="height:300px !important;">
@@ -116,7 +138,7 @@
                         <button type="button" class="btn btn-lg btn-primary choice Ch3"></button>
                         <button type="button" class="btn btn-lg btn-primary choice Ch4"></button>
                     </div>
-                    <div class="image-of-character" style="float: right; position: absolute; right: 20px; top: 30px;"> </div>
+                    <div class="image-of-character"> </div>
 
                     <div class="social-share">
                         <h2 style="float:left; width:100%;" class="game-over-text">Game Over!</h2>

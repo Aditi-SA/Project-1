@@ -5,6 +5,11 @@ var currentGameTime = 0
 var END_INTERVAL = 0
 var START_INTERVAL = 10;
 
+
+$(".All-Game").hide();
+$(".Fun-Fact").hide();
+
+
 $(".send-link").hide();
 $("#State-display").hide();
 $(".table").hide();
@@ -29,7 +34,7 @@ document.getElementById('wins-losses-2').style.display = "none"
 document.getElementById('name-join-2').style.display = "none"
 
 // $("#startgame").css("display", "none");
-document.getElementById('startgame').style.display = "none"
+// document.getElementById('startgame').style.display = "none"
 
 // Text field for player 1
 document.getElementById('join').addEventListener('click', function () {
@@ -666,3 +671,20 @@ function endgame() {
     }
 
 }
+
+
+// selects questions array, hides the rules and start button
+$("#startgame").on("click", function() {    
+    $(".rules").hide();
+    $(".Fun-Fact").hide();
+    $(".All-Game").show();
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//omdb function
+$("#Marvel-Data").on("click", function() {       
+    $(".rules").hide();
+    $(".All-Game").hide();
+    $(".Fun-Fact").show();    
+});
