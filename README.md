@@ -15,4 +15,4 @@ When the game is over you will be able to see your results against your opponent
 
 
 Link to the Game:
-https://aditi-sa.github.io/Project-1
+https://aditi-sa.github.io/SUPERHERO_SHOWDOWN/
