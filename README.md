@@ -20,6 +20,7 @@ When the game is over you will be able to see your results against your opponent
 * CSS3
 * Javascript
 * jQuery
+* Firebase
 
 
 
