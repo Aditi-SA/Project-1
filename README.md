@@ -1,5 +1,7 @@
 # Project-1
 Project 1: SUPERHERO SHOWDOWN
+Link to the Game:
+https://aditi-sa.github.io/SUPERHERO_SHOWDOWN/
 
 SUPERHERO SHOWDOWN is a 2 player game designed to simulate a competetive arena for enthusiastic and competetive players to test their knowlwdge against each other.
 
@@ -13,6 +15,11 @@ You will have a maximum of 8 seconds to answer each question.
 The game lasts for an overall time of 80 seconds.
 When the game is over you will be able to see your results against your opponent and share the game on Twitter.
 
+## Technology Incorporated:
+* HTML5
+* CSS3
+* Javascript
+* jQuery
 
-Link to the Game:
-https://aditi-sa.github.io/SUPERHERO_SHOWDOWN/
+
+
